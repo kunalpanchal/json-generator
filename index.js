@@ -18,10 +18,8 @@ if (cluster.isMaster) {
         data += createFakeData(workerId, i, dict);
     }
     fs.writeFile(`data/myjsonfile${workerId}.json`, data, 'utf8', () => {
-        var shell = require('shelljs');
-        shell.cd('data');
-        // shell.exec(`curl -H 'Content-Type: application/x-ndjson' -XPOST 'localhost:9200/testtt/doc/_bulk?pretty' --data-binary @myjsonfile${workerId}.json &>/dev/null`);
-        console.log(`json created for ${workerId}`)
+       console.log(`json created for ${workerId}`)
+       cluster.worker.destroy();
     });
 }
 
