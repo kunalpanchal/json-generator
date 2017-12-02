@@ -20,7 +20,6 @@
   },
   "homepage": "https://github.com/kunalpanchal/json-generator#readme",
   "dependencies": {
-    "express": "^4.16.2",
     "shelljs": "^0.7.8"
   }
 }
