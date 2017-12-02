@@ -23,7 +23,7 @@ if (cluster.isMaster) {
     !fs.existsSync('data') && fs.mkdirSync('data');
 
     fs.writeFile(`data/json-data-${workerId}.json`, data, 'utf8', () => {
-        console.log(`json created for ${workerId}`)
+        console.log(`CREATED : data/json-data-${workerId}`)
         cluster.worker.destroy();
     });
 
