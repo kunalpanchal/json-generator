@@ -4,25 +4,20 @@ const cluster = require('cluster');
 const fs = require('fs');
 const shelljs = require('shelljs');
 
-const port = process.env.PORT || 8080;
-const numberOfClusters = 100;
-const recordsPerFile = 500;
-const uploadToES = true;
-const ES_URL = 'localhost:9200';
-const ES_INDEX = 'testtt';
+require('dotenv').config()
 
 if (cluster.isMaster) {
-    for (let i = 0; i < numberOfClusters; i++)
+    for (let i = 0; i < process.env.numberOfClusters; i++)
         cluster.fork();
 
-    process.on('beforeExit', code => uploadToES && updateDataToES());
+    process.on('beforeExit', code => process.env.uploadToES && updateDataToES());
 
 } else {
     const dict = fs.readFileSync('dict.txt', 'utf8').toString().split('\n');
     const workerId = cluster.worker.id;
     let data = '';
 
-    for (let i = 0; i < recordsPerFile; i++)
+    for (let i = 0; i < process.env.recordsPerFile; i++)
         data += createFakeData(workerId, i, dict);
 
     !fs.existsSync('data') && fs.mkdirSync('data');
@@ -36,10 +31,10 @@ if (cluster.isMaster) {
 
 function updateDataToES() {
     shelljs.exec(` 
-    for i in $(seq ${numberOfClusters})
+    for i in $(seq ${process.env.numberOfClusters})
     do  
       echo $i
-      curl -H 'Content-Type: application/x-ndjson' -XPOST '${ES_URL}/${ES_INDEX}/doc/_bulk?pretty' --data-binary @data/json-data-$i.json >/dev/null;
+      curl -H 'Content-Type: application/x-ndjson' -XPOST '${process.env.ES_URL}/${process.env.ES_INDEX}/doc/_bulk?pretty' --data-binary @data/json-data-$i.json >/dev/null;
     done`)
 }
 
